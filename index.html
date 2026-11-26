@@ -40,10 +40,11 @@ $("homeRoster").innerHTML=rosterHtml("home");$("awayRoster").innerHTML=rosterHtm
 const entries=Object.entries(state.events||{}).sort((x,y)=>(y[1].createdAt||0)-(x[1].createdAt||0));
 const isAdmin=auth&&auth.currentUser&&auth.currentUser.uid===ADMIN_UID;
 $("feed").innerHTML=entries.length?entries.map(([key,e])=>'<article class="event"><div class="eventtop"><b>'+safe(e.title)+'</b><div class="event-actions"><span class="eventtime">'+safe(e.periodLabel)+' · '+safe(e.time)+'</span>'+(isAdmin?'<button class="secondary delete-event" data-key="'+safe(key)+'" type="button">Löschen</button>':'')+'</div></div><div class="body">'+safe(e.body)+'</div></article>').join(""):'<p class="muted">Noch keine Ereignisse.</p>';
+const archives=Object.entries(state.archive||{}).sort((a,b)=>(b[1].archivedAt||0)-(a[1].archivedAt||0));
+$("archiveList").innerHTML=archives.length?archives.map(([key,m])=>{const ev=Object.values(m.events||{}).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));return '<details class="event"><summary><b>'+safe(m.homeName)+' '+safe(m.homeScore)+' : '+safe(m.awayScore)+' '+safe(m.awayName)+' ('+safe(m.matchday||'Spiel')+')'+'</b><div class="muted">'+safe(m.matchday||"Spiel")+' · '+(m.archivedAt?new Date(m.archivedAt).toLocaleDateString("de-DE"):"")+'</div></summary>'+ev.map(e=>'<div class="event"><b>'+safe(e.title)+'</b> <span class="eventtime">'+safe(e.periodLabel)+' · '+safe(e.time)+'</span><div class="body">'+safe(e.body)+'</div></div>').join("")+'</details>';}).join(""):'<p class="muted">Noch keine archivierten Spiele.</p>';
 }
 
-const archives=Object.entries(state.archive||{}).sort((a,b)=>(b[1].archivedAt||0)-(a[1].archivedAt||0));
-$("archiveList").innerHTML=archives.length?archives.map(([key,m])=>{const ev=Object.values(m.events||{}).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));return '<details class="event"><summary><b>'+safe(m.homeName)+' '+safe(m.homeScore)+' : '+safe(m.awayScore)+' '+safe(m.awayName)+'</b><div class="muted">'+safe(m.matchday||"Spiel")+' · '+(m.archivedAt?new Date(m.archivedAt).toLocaleDateString("de-DE"):"")+'</div></summary>'+ev.map(e=>'<div class="event"><b>'+safe(e.title)+'</b> <span class="eventtime">'+safe(e.periodLabel)+' · '+safe(e.time)+'</span><div class="body">'+safe(e.body)+'</div></div>').join("")+'</details>';}).join(""):'<p class="muted">Noch keine archivierten Spiele.</p>';
+
 function cfgReady(){return firebaseConfig.apiKey!=="FIREBASE_API_KEY"}
 function status(s){$("status").textContent=s}
 function fields(){let t=$("t").value.trim();if(!/^\d{1,2}:\d{2}$/.test(t))throw Error("Zeit bitte als MM:SS eingeben, z. B. 12:49.");return{time:t,period:$("p").value,periodLabel:periodName($("p").value)}}

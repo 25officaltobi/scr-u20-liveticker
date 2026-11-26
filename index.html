@@ -93,7 +93,7 @@ const entriesHtml=entries.map(([key,e])=>{
  const team=e.scoreTeam==="home"||e.scoreTeam==="away"?e.scoreTeam:null;
  const logo=team?teamLogoFor(team):"";
  const adminButtons=isAdmin?'<button class="secondary edit-event" data-key="'+safe(key)+'" type="button">Bearbeiten</button><button class="secondary delete-event" data-key="'+safe(key)+'" type="button">Löschen</button>':"";
- if(e.kind==="penalty"){
+ if(e.kind==="penalty"||String(e.title||"").startsWith("STRAFE")){
   const rawPlayer=e.playerName||e.player||e.body||"";
   const firstLine=String(rawPlayer).split("\n")[0];
   const parsed=firstLine.match(/^#?(\d+)\s+(.+)$/);

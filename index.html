@@ -29,6 +29,15 @@ const ADMIN_UID="YBVoDl4JZHheze6gqxLlXMxs5qP2";
 const SCR_LICENSED_PLAYERS=[["ALBERT","Arel",7,"F",0,0,"L"],["BENDL","Leander",4,"F",0,0,"L"],["BRANDL","Linus",24,"F",74,185,"L"],["CHYZOWSKI","Benedict",16,"F",0,0,"R"],["FLECKENSTEIN","Leander",21,"D",0,0,"R"],["GAISREITER","Johannes",14,"D",0,0,"L"],["GRIEGER","Bjarne",20,"D",78,185,"L"],["HARR","Matthias",26,"D",89,186,"L"],["HASLINGER","Benjamin",13,"F",65,180,"L"],["HAUENSTEIN","Vincent",17,"F",0,0,"L"],["JANSEN","Max",8,"F",0,0,"L"],["KRUKLIS","Norberts",28,"F",80,188,"L"],["LECLAIRE","Charlie",29,"F",0,0,"R"],["LEHNER","Kilian",19,"D",0,0,"L"],["LINDNER","Tim",10,"F",0,0,"R"],["MERWALD","Robin",1,"G",73,175,"L"],["MITTERMAIER","Johannes",23,"D",0,0,"L"],["OEFFNER","Jakob",25,"G",0,0,"R"],["POLL","Elias",30,"G",76,174,"L"],["PÖLT","Magnus",3,"D",0,0,"R"],["REINDL","Xaver",31,"F",0,0,"L"],["ROTTER","Fabian",22,"D",0,0,"L"],["SPERL","Xaver",27,"D",68,173,"L"],["STEINHÜBL","Johannes",12,"F",0,0,"L"],["STEINHÜBL","Josef",15,"F",0,0,"L"],["STEINLE","Luca",9,"D",0,0,"L"],["ULRICH","Elias",11,"F",83,188,"L"],["WAIBEL","Michael",18,"F",0,0,"L"]].map(([surname,first,number,pos,weight,height,hand])=>({surname,first,number,pos,weight,height,hand,name:first+" "+surname}));
 const $=id=>document.getElementById(id);let db,auth,state={};const periodName=p=>p==="OT"?"Verlängerung":p==="SO"?"Penaltyschießen":p+". Drittel";
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function refreshEventPlayerSelects(){
+ const homePlayers=Object.values((state.lineups&&state.lineups.home&&state.lineups.home.players)||{});
+ const awayPlayers=Object.values((state.lineups&&state.lineups.away&&state.lineups.away.players)||{});
+ const team=$("gt").value;
+ const options=team==="home"?homePlayers:awayPlayers;
+ for(const id of ["scorer","assist1","assist2"]){const el=$(id);if(!el)continue;const first=id==="scorer"?"Spieler auswählen":"Kein Assist";el.innerHTML='<option value="">'+first+'</option>'+options.map(p=>'<option value="#'+safe(p.number)+' '+safe(p.name)+'">#'+safe(p.number)+' '+safe(p.name)+'</option>').join("");}
+ const penaltyTeam=$("pt").value;const pen=penaltyTeam==="home"?homePlayers:awayPlayers;
+ const player=$("player");if(player)player.innerHTML='<option value="">Spieler auswählen</option>'+pen.map(p=>'<option value="#'+safe(p.number)+' '+safe(p.name)+'">#'+safe(p.number)+' '+safe(p.name)+'</option>').join("");
+}
 function render(d){
 state=d||{};
 $("hn").textContent=state.homeName||"SC Riessersee";$("an").textContent=state.awayName||"Gastteam";
@@ -38,16 +47,8 @@ $("homeRosterTitle").textContent=state.homeName||"SC Riessersee";$("awayRosterTi
 
 const isAdmin=auth&&auth.currentUser&&auth.currentUser.uid===ADMIN_UID;
 const homePlayers=Object.values((state.lineups&&state.lineups.home&&state.lineups.home.players)||{});
-const awayPlayers=Object.values((state.lineups&&state.lineups.away&&state.lineups.away.players)||{});
 const licensedSelect=$("licensedPlayer");
 if(licensedSelect){const selected=new Set(homePlayers.map(p=>String(p.number)));licensedSelect.innerHTML='<option value="">SCR-Spieler auswählen …</option>'+SCR_LICENSED_PLAYERS.filter(p=>!selected.has(String(p.number))).map(p=>'<option value="'+p.number+'">'+p.name+' · #'+p.number+' · '+p.pos+'</option>').join("");}
-function refreshEventPlayerSelects(){
- const team=$("gt").value;
- const options=(team==="home"?homePlayers:awayPlayers);
- for(const id of ["scorer","assist1","assist2"]){const el=$(id);const first=id==="scorer"?"Spieler auswählen":"Kein Assist";el.innerHTML='<option value="">'+first+'</option>'+options.map(p=>'<option value="#'+safe(p.number)+' '+safe(p.name)+'">#'+safe(p.number)+' '+safe(p.name)+'</option>').join("");}
- const penaltyTeam=$("pt").value;const pen=penaltyTeam==="home"?homePlayers:awayPlayers;
- $("player").innerHTML='<option value="">Spieler auswählen</option>'+pen.map(p=>'<option value="#'+safe(p.number)+' '+safe(p.name)+'">#'+safe(p.number)+' '+safe(p.name)+'</option>').join("");
-}
 refreshEventPlayerSelects();
 if($("home").value!==undefined){$("home").value=state.homeName||"SC Riessersee";$("away").value=state.awayName||"Gastteam";$("homeLogo").value=state.homeLogo||"";$("awayLogo").value=state.awayLogo||"";$("p").value=state.period||"1";$("t").value=state.time||"00:00";$("scoreHomeInput").value=state.homeScore||0;$("scoreAwayInput").value=state.awayScore||0;}
 const silhouette='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" rx="12" fill="%23263a54"/%3E%3Ccircle cx="50" cy="35" r="19" fill="%2395a8bf"/%3E%3Cpath d="M15 100c2-27 16-40 35-40s33 13 35 40" fill="%2395a8bf"/%3E%3C/svg%3E';

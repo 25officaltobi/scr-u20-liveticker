@@ -23,7 +23,7 @@
 <script>
 /* Firebase-Projektwerte werden nach der Firebase-Einrichtung hier eingetragen. */
 const firebaseConfig={apiKey:"AIzaSyDOa491MLuRq4dGb3iP-ZgFtYvsTbJ5yBE",authDomain:"scr-u20-liveticker.firebaseapp.com",databaseURL:"https://scr-u20-liveticker-default-rtdb.europe-west1.firebasedatabase.app",projectId:"scr-u20-liveticker",storageBucket:"scr-u20-liveticker.firebasestorage.app",messagingSenderId:"699835342844",appId:"1:699835342844:web:7d3be0568b21e9231d5c79",measurementId:"G-60PSGFPZB6"};
-const ADMIN_UID="FIREBASE_ADMIN_UID";
+const ADMIN_UID="YBVoDl4JZHheze6gqxLlXMxs5qP2";
 const $=id=>document.getElementById(id);let db,auth,state={};const periodName=p=>p==="OT"?"Verlängerung":p==="SO"?"Penaltyschießen":p+". Drittel";
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function render(d){state=d||{};$("hn").textContent=state.homeName||"SC Riessersee";$("an").textContent=state.awayName||"Gastteam";$("score").textContent=(state.homeScore||0)+" : "+(state.awayScore||0);$("clock").textContent=state.time||"00:00";$("period").textContent=periodName(state.period||"1")+" · Spielzeit";$("hl").src=state.homeLogo||"https://placehold.co/120x120/ffffff/17243a?text=SCR";$("al").src=state.awayLogo||"https://placehold.co/120x120/ffffff/17243a?text=GAST";let a=Object.values(state.events||{}).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));$("feed").innerHTML=a.length?a.map(e=>'<article class="event"><div class="eventtop"><b>'+safe(e.title)+'</b><span class="eventtime">'+safe(e.periodLabel)+' · '+safe(e.time)+'</span></div><div class="body">'+safe(e.body)+'</div></article>').join(""):'<p class="muted">Noch keine Ereignisse.</p>'}

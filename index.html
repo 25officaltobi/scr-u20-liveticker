@@ -88,16 +88,21 @@ h3{font-size:14px}
 .team-stat span{font-size:12px}
 #periodStats>div{display:flex;justify-content:space-between;padding:9px 10px;border-bottom:1px solid var(--line-soft);font-weight:700}
 #periodStats>div:last-child{border-bottom:0}
-#archiveList .archive-game{background:#0b1728;border:1px solid var(--line-soft);border-radius:14px;padding:0;margin:10px 0;overflow:hidden}
-#archiveList .archive-game summary{cursor:pointer;list-style:none;padding:14px;display:flex;flex-direction:column;gap:7px}
+#archiveList .archive-game{background:linear-gradient(145deg,#10243a,#0b1728);border:1px solid var(--line-soft);border-radius:15px;padding:0;margin:12px 0;overflow:hidden}
+#archiveList .archive-game summary{cursor:pointer;list-style:none;padding:15px 13px;display:flex;flex-direction:column;gap:10px}
 #archiveList .archive-game summary::-webkit-details-marker{display:none}
-#archiveList .archive-title{display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:800}
-#archiveList .archive-score{font-size:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
-#archiveList .archive-meta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;flex-wrap:wrap}
+#archiveList .archive-matchup{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
+#archiveList .archive-team{display:flex;align-items:center;gap:9px;min-width:0;font-size:13px;font-weight:800}
+#archiveList .archive-team.away{flex-direction:row-reverse;text-align:right}
+#archiveList .archive-team img{width:42px;height:42px;object-fit:contain;flex:0 0 42px;filter:drop-shadow(0 2px 5px #0008)}
+#archiveList .archive-team span{overflow-wrap:anywhere}
+#archiveList .archive-score{font-size:23px;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:1px}
+#archiveList .archive-meta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;flex-wrap:wrap;border-top:1px solid var(--line-soft);padding-top:9px}
 #archiveList .archive-tools{padding:0 14px 12px}
 #archiveList .archive-events{padding:0 14px 14px}
-#archiveList .archive-events .event{margin:8px 0;padding:10px;background:rgba(255,255,255,.035);border-radius:9px}
+#archiveList .archive-events .event{margin:8px 0;padding:10px;background:rgba(255,255,255,.045);border-radius:9px}
 #archiveList .archive-game[open] summary{border-bottom:1px solid var(--line-soft);margin-bottom:10px}
+@media(max-width:420px){#archiveList .archive-team img{width:32px;height:32px;flex-basis:32px}#archiveList .archive-score{font-size:19px}#archiveList .archive-team{font-size:11px;gap:5px}}
 #adminSection{border-color:rgba(105,181,255,.35)}
 #adminSection>h2{display:flex;align-items:center;gap:9px}
 #adminSection>h2:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue)}
@@ -220,7 +225,7 @@ const entriesHtml=entries.map(([key,e])=>{
 }).join("");
 $("feed").innerHTML=entriesHtml||'<p class="muted">Noch keine Ereignisse.</p>';
 const archives=Object.entries(state.archive||{}).sort((a,b)=>{const dateValue=m=>m.playedAt?new Date(m.playedAt+"T12:00:00").getTime():(m.archivedAt||0);return dateValue(b[1])-dateValue(a[1]);});
- $("archiveList").innerHTML=archives.length?archives.map(([key,m])=>{const ev=Object.values(m.events||{}).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));const date=m.playedAt?new Date(m.playedAt+"T12:00:00").toLocaleDateString("de-DE"):(m.archivedAt?new Date(m.archivedAt).toLocaleDateString("de-DE"):"Datum unbekannt");return '<details class="archive-game"><summary><div class="archive-title"><span>'+safe(m.homeName||"Heimteam")+' · '+safe(m.awayName||"Gastteam")+'</span><span class="archive-score">'+safe(m.homeScore??0)+' : '+safe(m.awayScore??0)+'</span></div><div class="archive-meta"><span>'+safe(m.matchday||"Spiel")+', '+safe(date)+'</span><span>'+ev.length+' Meldungen</span></div></summary>'+(isAdmin?'<div class="archive-tools"><button class="secondary edit-archive-date" data-key="'+safe(key)+'" type="button">Spieldatum ändern</button></div>':'')+'<div class="archive-events">'+(ev.length?ev.map(e=>'<div class="event"><b>'+safe(e.title||"Meldung")+'</b> <span class="eventtime">'+safe(e.periodLabel||"")+(e.time?' · '+safe(e.time):"")+'</span><div class="body">'+safe(e.body||"")+'</div></div>').join(""):'<p class="muted">Keine Meldungen gespeichert.</p>')+'</div></details>';}).join(""):'<p class="muted">Noch keine archivierten Spiele.</p>';
+ $("archiveList").innerHTML=archives.length?archives.map(([key,m])=>{const ev=Object.values(m.events||{}).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));const date=m.playedAt?new Date(m.playedAt+"T12:00:00").toLocaleDateString("de-DE"):(m.archivedAt?new Date(m.archivedAt).toLocaleDateString("de-DE"):"Datum unbekannt");const homeLogo=m.homeLogo?'<img src="'+safe(m.homeLogo)+'" alt="" onerror="this.style.display=\'none\'">':"";const awayLogo=m.awayLogo?'<img src="'+safe(m.awayLogo)+'" alt="" onerror="this.style.display=\'none\'">':"";return '<details class="archive-game"><summary><div class="archive-matchup"><div class="archive-team home">'+homeLogo+'<span>'+safe(m.homeName||"Heimteam")+'</span></div><span class="archive-score">'+safe(m.homeScore??0)+' : '+safe(m.awayScore??0)+'</span><div class="archive-team away">'+awayLogo+'<span>'+safe(m.awayName||"Gastteam")+'</span></div></div><div class="archive-meta"><span>'+safe(m.matchday||"Spiel")+' · '+safe(date)+'</span><span>'+ev.length+' Meldungen　⌄</span></div></summary>'+(isAdmin?'<div class="archive-tools"><button class="secondary edit-archive-date" data-key="'+safe(key)+'" type="button">Spieldatum ändern</button></div>':'')+'<div class="archive-events">'+(ev.length?ev.map(e=>'<div class="event"><b>'+safe(e.title||"Meldung")+'</b> <span class="eventtime">'+safe(e.periodLabel||"")+(e.time?' · '+safe(e.time):"")+'</span><div class="body">'+safe(e.body||"")+'</div></div>').join(""):'<p class="muted">Keine Meldungen gespeichert.</p>')+'</div></details>';}).join(""):'<p class="muted">Noch keine archivierten Spiele.</p>';
 }
 
 

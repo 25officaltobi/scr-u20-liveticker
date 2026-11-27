@@ -34,7 +34,96 @@
 @media(max-width:480px){.penalty-card{grid-template-columns:minmax(0,1fr) 34%;min-height:185px;padding:10px}.penalty-meta{font-size:11px;gap:5px}.penalty-meta img{width:27px;height:27px}.penalty-word{font-size:39px}.penalty-player-name{font-size:15px}.penalty-minutes{font-size:30px}.penalty-reason{font-size:12px}.penalty-player-image{width:38%}.penalty-card.away .penalty-player-image{width:35%}}
 
 @media(max-width:480px){.goal-card{grid-template-columns:minmax(0,1fr) 34%;min-height:185px;padding:10px}.goal-player{width:38%}.goal-card.away .goal-player{width:35%}.goal-meta{font-size:11px;gap:5px}.goal-meta img{width:27px;height:27px}.goal-word{font-size:39px}.goal-score{font-size:46px}.goal-scorer{font-size:15px}.goal-assists{font-size:12px}}
-.lineup-tabs{margin:12px 0}.lineup-tabs .tab{flex:1;font-size:12px;padding:10px 4px}#adminSection{margin-top:16px}#adminSection.hidden{display:none}</style></head><body><main class="wrap">
+.lineup-tabs{margin:12px 0}.lineup-tabs .tab{flex:1;font-size:12px;padding:10px 4px}#adminSection{margin-top:16px}#adminSection.hidden{display:none}
+/* Übersichtliches Layout */
+:root{--surface:#15243a;--surface-2:#0e1a2c;--line-soft:rgba(160,190,225,.16)}
+body{background:radial-gradient(ellipse at 50% -180px,#25466a 0,#111d30 48%,#080f1b 100%);line-height:1.45}
+.wrap{max-width:980px;padding:22px 18px 56px}
+.top{padding:4px 2px 12px;margin-bottom:12px;font-size:13px;color:#d9e8f8}
+.live{display:inline-flex;align-items:center;gap:7px;background:rgba(237,28,36,.16);border:1px solid rgba(237,28,36,.45);color:#ffb8bd;padding:7px 12px}
+.live:before{content:"";width:7px;height:7px;border-radius:50%;background:#ff3848;box-shadow:0 0 0 4px rgba(255,56,72,.14)}
+.card{background:linear-gradient(145deg,rgba(25,43,67,.98),rgba(16,29,47,.98));border:1px solid var(--line-soft);border-radius:16px;padding:20px;margin-top:14px;box-shadow:0 8px 26px rgba(0,0,0,.13)}
+.teams{gap:16px;padding:4px 8px 0}
+.team{font-size:14px;line-height:1.25}
+.logo{width:82px;height:82px;border-radius:16px;background:#f8fafc;padding:8px;box-shadow:0 5px 16px #0003}
+.score{font-size:clamp(42px,8vw,68px);letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.clock{max-width:340px;margin:16px auto 0;background:#0b1728;border:1px solid rgba(105,181,255,.2);padding:11px 18px}
+.clock strong{font-size:32px;letter-spacing:.04em}
+.clock .muted{display:block;margin-top:2px}
+.tabs{position:sticky;top:0;z-index:20;padding:8px;margin:14px 0 4px;background:rgba(9,17,29,.92);backdrop-filter:blur(12px);border:1px solid var(--line-soft);border-radius:14px;box-shadow:0 8px 20px #0003}
+.tab{border-radius:9px;background:transparent;border:1px solid transparent;color:#b9c9dc;padding:12px 8px;font-size:12px;font-weight:800}
+.tab.active{background:var(--blue);color:#071321;box-shadow:0 3px 12px rgba(8,174,235,.22)}
+.tab-panel>.card{margin-top:12px}
+h2{font-size:16px;letter-spacing:.045em;font-weight:800;margin:0 0 15px;color:#f4f8ff}
+h3{font-size:14px}
+#feed{display:flex;flex-direction:column;gap:10px}
+.event{background:rgba(10,22,38,.68);border:1px solid var(--line-soft);border-left:4px solid var(--event-color,#52647d);border-radius:10px;padding:13px 14px;margin:0}
+.event:last-child{border-bottom:1px solid var(--line-soft)}
+.eventtop{align-items:flex-start}
+.eventtime{font-size:11px;font-weight:700;background:#0a1728;border:1px solid var(--line-soft);padding:4px 7px;border-radius:6px}
+.event .body{margin:8px 0 0 46px;font-size:14px}
+.goal-card,.penalty-card{border-radius:14px;margin:0;box-shadow:0 8px 22px #0002}
+.goal-card{min-height:230px;padding:16px 18px}
+.penalty-card{min-height:225px;border-radius:14px;padding:16px 18px}
+.goal-meta,.penalty-meta{font-size:12px;font-weight:800;opacity:.95}
+.goal-meta img{width:29px;height:29px}
+.goal-word{letter-spacing:-.045em}
+.goal-score{font-variant-numeric:tabular-nums}
+.goal-assists{font-size:12px}
+.penalty-word{letter-spacing:-.045em}
+.lineup-tabs{position:static;background:#0b1728;box-shadow:none;padding:5px;margin:12px 0 18px;grid-template-columns:repeat(4,1fr)}
+.lineup-tabs .tab{font-size:11px;padding:10px 4px}
+.lineups{gap:16px}
+.lineups>div{min-width:0;background:rgba(8,18,31,.38);border:1px solid var(--line-soft);border-radius:12px;padding:12px}
+.lineups h3{margin:0 0 11px;font-size:13px;color:#dcecff}
+.roster{grid-template-columns:1fr;gap:7px}
+.player{background:#0b1728;border-color:var(--line-soft);padding:7px 9px;min-width:0}
+.player b{font-size:12px;flex:1;min-width:0}
+.player-line-select{max-width:94px;padding:6px 5px;font-size:11px}
+.team-stats{gap:12px}
+.team-stat{background:#0b1728;border-color:var(--line-soft);border-radius:12px;padding:14px 10px;display:grid;grid-template-columns:1fr auto;align-items:center;text-align:left;column-gap:8px;row-gap:5px}
+.team-stat h3{grid-column:1/-1;text-align:center;padding-bottom:9px;margin-bottom:4px;border-bottom:1px solid var(--line-soft);font-size:13px}
+.team-stat strong{font-size:19px;text-align:right;font-variant-numeric:tabular-nums}
+.team-stat span{font-size:12px}
+#periodStats>div{display:flex;justify-content:space-between;padding:9px 10px;border-bottom:1px solid var(--line-soft);font-weight:700}
+#periodStats>div:last-child{border-bottom:0}
+#archiveList details{background:rgba(10,22,38,.65);border:1px solid var(--line-soft);border-radius:10px;padding:12px;margin:9px 0}
+#archiveList summary{cursor:pointer;line-height:1.5}
+#archiveList summary b{display:block;font-size:13px}
+#archiveList details[open] summary{margin-bottom:10px}
+#archiveList details .event{margin-top:8px}
+#adminSection{border-color:rgba(105,181,255,.35)}
+#adminSection>h2{display:flex;align-items:center;gap:9px}
+#adminSection>h2:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue)}
+button{transition:filter .15s ease,transform .15s ease}
+button:hover{filter:brightness(1.08)}
+button:active{transform:translateY(1px)}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(105,181,255,.45);outline-offset:1px}
+@media(max-width:600px){
+ .wrap{padding:14px 10px 36px}
+ .card{padding:14px;margin-top:11px;border-radius:13px}
+ .teams{gap:7px;padding:0}
+ .logo{width:60px;height:60px;border-radius:12px;padding:6px}
+ .team{font-size:12px}
+ .score{font-size:clamp(38px,11vw,52px)}
+ .clock{margin-top:12px;padding:9px}
+ .clock strong{font-size:27px}
+ .tabs{gap:4px;padding:5px;margin-top:11px}
+ .tab{font-size:10px;padding:11px 3px}
+ .goal-card{min-height:190px;padding:12px}
+ .penalty-card{min-height:190px;padding:12px}
+ .goal-meta{font-size:10px}
+ .penalty-meta{font-size:10px}
+ .event .body{margin-left:0}
+ .eventtop{flex-direction:column;gap:7px}
+ .event-actions{flex-wrap:wrap}
+ .lineups{grid-template-columns:1fr}
+ .team-stats{gap:7px}
+ .team-stat{padding:10px 8px;column-gap:4px}
+ .team-stat strong{font-size:17px}
+ .team-stat span{font-size:10px}
+}
+</style></head><body><main class="wrap">
 <div class="top"><span>SC RIESSERSEE · U20</span><span class="live">LIVETICKER</span></div>
 <section class="card"><div class="teams"><div class="team"><img id="hl" class="logo" src="https://placehold.co/120x120/ffffff/17243a?text=SCR"><div id="hn">SC Riessersee</div></div><div id="score" class="score">0 : 0</div><div class="team"><img id="al" class="logo" src="https://placehold.co/120x120/ffffff/17243a?text=GAST"><div id="an">Gastteam</div></div></div><div class="clock"><strong id="clock">00:00</strong><span id="period" class="muted">1. Drittel · Spielzeit</span></div></section>
 <nav class="tabs" aria-label="Spielinformationen"><button class="tab active" data-tab="livePanel">LIVETICKER</button><button class="tab" data-tab="lineupPanel">AUFSTELLUNG</button><button class="tab" data-tab="statsPanel">STATISTIK</button></nav><section class="tab-panel active" id="livePanel"><section class="card" id="countdownCard" style="display:none"><h2>NÄCHSTES SPIEL</h2><div id="countdown" class="score" style="text-align:center;font-size:clamp(28px,7vw,46px)">--</div><p id="countdownDate" class="muted" style="text-align:center"></p></section><section class="card"><h2>LIVE-TICKER</h2><div id="feed"><p class="muted">Noch keine Ereignisse.</p></div></section></section>

@@ -135,6 +135,45 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(105,181,255,.45);
  .team-stat strong{font-size:17px}
  .team-stat span{font-size:10px}
 }
+
+/* Moderner Live-Ticker und aufgeräumte Administration */
+:root{--scr-sky:#69b5ff;--guest-red:#e34c5b}
+.wrap{max-width:1040px}
+.tabs{gap:6px;display:flex;overflow-x:auto;scrollbar-width:thin}
+.tab{flex:1;min-width:max-content;transition:background .18s ease,transform .18s ease}
+.tab:active{transform:scale(.98)}
+.tab-panel>.card{padding:clamp(16px,3vw,24px)}
+#feed{gap:14px}
+.event,.goal-card,.penalty-card{border-radius:14px;box-shadow:0 6px 20px #0002;transition:transform .18s ease,border-color .18s ease}
+.event:hover,.goal-card:hover,.penalty-card:hover{transform:translateY(-1px);border-color:#ffffff35}
+.event{padding:15px 16px}
+.eventtop{gap:12px}
+.event-logo{width:30px;height:30px;object-fit:contain;border-radius:8px;background:#fff;padding:3px}
+.eventtime{white-space:nowrap}
+#livePanel>.card:first-of-type{border-top:2px solid var(--scr-sky)}
+#adminSection{border:1px solid rgba(105,181,255,.25);background:linear-gradient(155deg,#172b45,#101d30);box-shadow:0 12px 32px #0004}
+#adminSection>h2{font-size:19px;margin-bottom:5px}
+#adminSection .hint{line-height:1.55}
+#admin{display:flex;flex-direction:column;gap:12px}
+#admin>.grid{padding:14px;background:#0b1728;border:1px solid var(--line-soft);border-radius:12px}
+#admin details.admin-group{border:1px solid var(--line-soft);border-radius:13px;background:rgba(7,17,30,.48);overflow:hidden}
+#admin details.admin-group>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;font-weight:800;font-size:13px;letter-spacing:.045em;color:#eaf4ff;user-select:none}
+#admin details.admin-group>summary::-webkit-details-marker{display:none}
+#admin details.admin-group>summary:after{content:"＋";color:var(--scr-sky);font-size:19px;line-height:1}
+#admin details.admin-group[open]>summary:after{content:"−"}
+#admin details.admin-group[open]>summary{background:rgba(105,181,255,.08);border-bottom:1px solid var(--line-soft)}
+#admin details.admin-group>.admin-group-body{padding:14px 15px 16px}
+#admin details.admin-group .admin-group-body>hr{display:none}
+#admin details.admin-group .admin-group-body>h2{display:none}
+#admin .field label{font-size:11px;letter-spacing:.035em;color:#c5d5e8}
+#admin input,#admin select,#admin textarea{border-radius:9px;min-height:42px}
+#admin textarea{min-height:90px}
+#admin .row{gap:9px;flex-wrap:wrap}
+#admin button{min-height:40px;border-radius:9px}
+#admin button:not(.secondary){box-shadow:0 3px 12px rgba(55,151,226,.18)}
+#admin .admin-group-body>.grid{margin-bottom:10px}
+@media(max-width:600px){.wrap{padding:14px 10px 38px}.tabs{border-radius:11px;padding:6px}.tab{padding:11px 9px;font-size:11px}#admin details.admin-group>summary{padding:13px 12px}#admin details.admin-group>.admin-group-body{padding:12px}#admin>.grid{padding:11px}.event{padding:12px}}
+
 </style></head><body><main class="wrap">
 <div class="top"><span>SC RIESSERSEE · U20</span><span class="live">LIVETICKER</span></div>
 <section class="card"><div class="teams"><div class="team"><img id="hl" class="logo" src="https://placehold.co/120x120/ffffff/17243a?text=SCR"><div id="hn">SC Riessersee</div></div><div id="score" class="score">0 : 0</div><div class="team"><img id="al" class="logo" src="https://placehold.co/120x120/ffffff/17243a?text=GAST"><div id="an">Gastteam</div></div></div><div class="clock"><strong id="clock">00:00</strong><span id="period" class="muted">1. Drittel · Spielzeit</span><strong id="gameStatusText" style="display:none;font-size:14px;letter-spacing:1px;margin-top:5px">SPIEL BEENDET</strong></div><div id="shootoutBoard" class="shootout-board" style="display:none"><b>PENALTYSCHIESSEN</b><div><span id="shootoutHomeName">SCR</span> <strong id="shootoutScore">0 : 0</strong> <span id="shootoutAwayName">GAST</span></div></div></section>
@@ -243,6 +282,24 @@ async function enableGameNotifications(){if(!("Notification"in window)){ $("noti
 $("enableNotifications").onclick=()=>run(enableGameNotifications);
 if("Notification"in window&&Notification.permission==="granted"){try{notificationsEnabled=localStorage.getItem("scrTickerNotifications")==="1";}catch(e){}updateNotificationButton();}
 if(cfgReady()){firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();$("setupNotice").classList.add("hidden");$("login").classList.remove("hidden");db.ref("ticker").on("value",s=>render(s.val()),e=>status("Datenbankfehler: "+e.message));db.ref("ticker/events").once("value").then(s=>{const known=new Set(Object.keys(s.val()||{}));db.ref("ticker/events").on("child_added",snap=>{if(known.has(snap.key)){known.delete(snap.key);return;}notifyGameEvent(snap);});}).catch(e=>status("Benachrichtigungen konnten nicht vorbereitet werden: "+e.message));auth.onAuthStateChanged(u=>{$("admin").classList.toggle("hidden",!u||u.uid!==ADMIN_UID);$("login").classList.toggle("hidden",!!u&&u.uid===ADMIN_UID);$("adminSection").classList.toggle("hidden",!$("adminSection").dataset.open);render(state);});}
+
+(function organizeAdminSections(){
+ const root=$("admin");if(!root||root.dataset.organized==="1")return;root.dataset.organized="1";
+ const nodes=Array.from(root.children);let group=null,body=null;
+ for(const node of nodes){
+  if(node.tagName==="H2"){
+   group=document.createElement("details");group.className="admin-group";
+   const summary=document.createElement("summary");summary.textContent=node.textContent.trim();
+   body=document.createElement("div");body.className="admin-group-body";
+   group.append(summary,body);root.appendChild(group);body.appendChild(node);
+   continue;
+  }
+  if(group){body.appendChild(node);}
+ }
+ const groups=root.querySelectorAll("details.admin-group");
+ groups.forEach((g,i)=>{if(i===0)g.open=true;});
+})();
+
 document.addEventListener("click",e=>{const statsTab=e.target.closest("[data-stats-view]");if(statsTab){document.querySelectorAll("[data-stats-view]").forEach(x=>x.classList.toggle("active",x===statsTab));$("statsOverviewPane").style.display=statsTab.dataset.statsView==="overview"?"block":"none";$("statsStarsPane").style.display=statsTab.dataset.statsView==="stars"?"block":"none";$("statsBadboyPane").style.display=statsTab.dataset.statsView==="badboy"?"block":"none";}});document.querySelectorAll(".tab[data-tab]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab[data-tab]").forEach(x=>x.classList.toggle("active",x===btn));document.querySelectorAll(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===btn.dataset.tab));if(btn.dataset.tab==="livePanel"){$("adminSection").dataset.open="true";$("adminSection").classList.remove("hidden");}else{$("adminSection").dataset.open="";$("adminSection").classList.add("hidden");}}));document.querySelectorAll(".lineup-tabs .tab").forEach(btn=>btn.addEventListener("click",()=>{activeLine=Number(btn.dataset.line);document.querySelectorAll(".lineup-tabs .tab").forEach(x=>x.classList.toggle("active",x===btn));render(state);}));$("hl").addEventListener("click",()=>{$("teamModal").classList.remove("hidden");});$("closeTeamModal").onclick=()=>$("teamModal").classList.add("hidden");$("teamModal").addEventListener("click",e=>{if(e.target===$("teamModal"))$("teamModal").classList.add("hidden");});
  $("loginBtn").onclick=()=>run(async()=>{await auth.signInWithEmailAndPassword($("email").value,$("password").value);$("password").value="";});
 $("logout").onclick=()=>run(()=>auth.signOut());$("psTeam").addEventListener("change",refreshEventPlayerSelects);
